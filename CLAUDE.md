@@ -48,8 +48,9 @@
 
 - **操作系统**：Windows 11
 - **工作目录**：`E:\MarssPython\2511-daily-arXiv`
-- **Python 版本**：3.12+
-- **包管理器**：uv（推荐）或 pip
+- **Python 版本**：3.12+ (实际使用 3.12.9，由 uv 管理)
+- **包管理器**：uv (快速、现代的 Python 包管理器)
+- **虚拟环境**：`.venv` (由 uv 自动创建和管理)
 
 ---
 
@@ -817,7 +818,107 @@ def test_full_pipeline():
 
 ## 使用指南
 
-### 生产方案使用
+### 🚀 快速开始（本地运行 v1.0）
+
+#### 1. 环境准备
+
+```bash
+# 克隆仓库
+git clone <your-repo-url>
+cd 2511-daily-arXiv
+
+# 使用 uv 安装依赖（推荐）
+uv sync
+
+# 激活虚拟环境
+# Windows (PowerShell)
+.venv\Scripts\Activate.ps1
+# Windows (CMD)
+.venv\Scripts\activate.bat
+# Git Bash / Linux / macOS
+source .venv/bin/activate
+```
+
+**为什么选择 uv？**
+- ⚡ **快速**：比 pip 快 10-100 倍
+- 🔒 **可靠**：自动创建和管理虚拟环境
+- 📦 **现代**：支持 pyproject.toml，无需 requirements.txt
+- 🎯 **精确**：使用 uv.lock 确保依赖版本一致
+
+#### 2. 配置环境变量
+
+```bash
+# 创建 .env 文件（基于示例）
+cp config/.env.example config/.env
+
+# 编辑 config/.env，填入你的 API 密钥
+# OPENAI_API_KEY=sk-xxxxxxxx
+# OPENAI_BASE_URL=https://api.deepseek.com
+# MODEL_NAME=deepseek-chat
+```
+
+或者直接设置环境变量：
+
+```bash
+# Windows (PowerShell)
+$env:OPENAI_API_KEY="sk-xxxxxxxx"
+$env:OPENAI_BASE_URL="https://api.deepseek.com"
+$env:CATEGORIES="cs.CV, cs.CL, cs.AI"
+$env:LANGUAGE="Chinese"
+$env:MODEL_NAME="deepseek-chat"
+
+# Git Bash / Linux / macOS
+export OPENAI_API_KEY="sk-xxxxxxxx"
+export OPENAI_BASE_URL="https://api.deepseek.com"
+export CATEGORIES="cs.CV, cs.CL, cs.AI"
+export LANGUAGE="Chinese"
+export MODEL_NAME="deepseek-chat"
+```
+
+#### 3. 运行完整流程（v1.0）
+
+**方式一：使用 run.sh 脚本（推荐）**
+
+```bash
+# 需要 Git Bash 或 WSL（Windows 上）
+bash run.sh
+```
+
+**方式二：手动执行各步骤**
+
+```bash
+# 获取今天的日期
+$today = (Get-Date).ToString("yyyy-MM-dd")  # PowerShell
+# 或
+today=$(date -u "+%Y-%m-%d")  # Git Bash
+
+# 步骤 1：爬取论文
+cd daily_arxiv
+scrapy crawl arxiv -o "../data/${today}.jsonl"
+cd ..
+
+# 步骤 2：AI 增强（生成摘要）
+cd ai
+python enhance.py --data "../data/${today}.jsonl" --max_workers 10
+cd ..
+
+# 步骤 3：转换为 Markdown
+cd to_md
+python convert.py --data "../data/${today}_AI_enhanced_Chinese.jsonl"
+cd ..
+
+# 步骤 4：更新 README（可选）
+python update_readme.py
+```
+
+#### 4. 查看结果
+
+生成的文件在 `data/` 目录：
+- `{date}.jsonl` - 原始爬取数据
+- `{date}_AI_enhanced_Chinese.jsonl` - AI 增强后的数据
+- `{date}.md` - 最终的 Markdown 文档
+
+### 生产方案使用（GitHub Actions 自动化）
 
 详见 [README.md](README.md)，主要步骤：
 1. Fork 本仓库
@@ -826,17 +927,17 @@ def test_full_pipeline():
 4. 配置 GitHub Pages
 5. 访问 `https://<username>.github.io/daily-arXiv-ai-enhanced/`
 
-### 简化方案使用（待完成）
+### v2.0 简化方案使用（开发中）
 
 ```bash
 # 1. 配置环境变量
-cp config/.env.example .env
-# 编辑 .env，填入 API 密钥
+cp config/.env.example config/.env
+# 编辑 config/.env，填入 API 密钥
 
 # 2. 配置研究母题
 # 编辑 config/research_topics.txt
 
-# 3. 运行
+# 3. 运行（待实现）
 python main.py
 ```
 
