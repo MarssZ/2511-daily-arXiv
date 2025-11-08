@@ -17,10 +17,23 @@ from langchain.prompts import (
 )
 from structure import Structure
 
-if os.path.exists('.env'):
+# Disable proxy for accessing domestic API (Alibaba Bailian)
+os.environ.pop('HTTP_PROXY', None)
+os.environ.pop('HTTPS_PROXY', None)
+os.environ.pop('ALL_PROXY', None)
+os.environ.pop('http_proxy', None)
+os.environ.pop('https_proxy', None)
+os.environ.pop('all_proxy', None)
+
+# Load .env from parent directory (project root) or current directory
+parent_env = os.path.join('..', '.env')
+if os.path.exists(parent_env):
+    dotenv.load_dotenv(parent_env)
+elif os.path.exists('.env'):
     dotenv.load_dotenv()
-template = open("template.txt", "r").read()
-system = open("system.txt", "r").read()
+
+template = open("template.txt", "r", encoding='utf-8').read()
+system = open("system.txt", "r", encoding='utf-8').read()
 
 def parse_args():
     """解析命令行参数"""
@@ -31,19 +44,17 @@ def parse_args():
 
 def process_single_item(chain, item: Dict, language: str) -> Dict:
     """处理单个数据项"""
-    # Default structure with meaningful fallback values
+    # Default structure with meaningful fallback values (平铺结构)
     default_ai_fields = {
         "core_problem": "问题提取失败",
         "key_insight": "视角分析失败",
         "method": "方法提取失败",
         "method_formula": "方法公式化失败",
         "core_finding": "发现提取失败",
-        "value": {
-            "mechanism_insight": "机制洞察分析失败",
-            "action_value": "行动启发评估失败",
-            "transferability": "可迁移性分析失败",
-            "value_score": "价值评分失败"
-        },
+        "mechanism_insight": "机制洞察分析失败",
+        "action_value": "行动启发评估失败",
+        "transferability": "可迁移性分析失败",
+        "value_score": "价值评分失败",
         "summary_core": "核心总结生成失败",
         "summary_layman": "大白话总结生成失败"
     }
@@ -118,7 +129,7 @@ def process_all_items(data: List[Dict], model_name: str, language: str, max_work
                 processed_data[idx] = result
             except Exception as e:
                 print(f"Item at index {idx} generated an exception: {e}", file=sys.stderr)
-                # Add default AI fields to ensure consistency
+                # Add default AI fields to ensure consistency (平铺结构)
                 processed_data[idx] = data[idx]
                 processed_data[idx]['AI'] = {
                     "core_problem": "处理失败",
@@ -126,12 +137,10 @@ def process_all_items(data: List[Dict], model_name: str, language: str, max_work
                     "method": "处理失败",
                     "method_formula": "处理失败",
                     "core_finding": "处理失败",
-                    "value": {
-                        "mechanism_insight": "处理失败",
-                        "action_value": "处理失败",
-                        "transferability": "处理失败",
-                        "value_score": "处理失败"
-                    },
+                    "mechanism_insight": "处理失败",
+                    "action_value": "处理失败",
+                    "transferability": "处理失败",
+                    "value_score": "处理失败",
                     "summary_core": "处理失败",
                     "summary_layman": "处理失败"
                 }

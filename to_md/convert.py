@@ -45,24 +45,32 @@ if __name__ == "__main__":
                 if not ai_data or not isinstance(ai_data, dict):
                     print(f"Skipping item '{item.get('title', 'Unknown')}' due to missing or invalid AI data")
                     continue
-                
-                # Check if all required AI fields are present
-                required_fields = ['tldr', 'motivation', 'method', 'result', 'conclusion']
+
+                # Check if all required AI fields are present (new field structure)
+                required_fields = ['core_problem', 'key_insight', 'method', 'method_formula', 'core_finding',
+                                 'mechanism_insight', 'action_value', 'transferability', 'value_score',
+                                 'summary_core', 'summary_layman']
                 if not all(field in ai_data for field in required_fields):
                     print(f"Skipping item '{item.get('title', 'Unknown')}' due to incomplete AI fields")
                     continue
-                
+
                 papers.append(
                     template.format(
                         title=item["title"],
-                        authors=",".join(item["authors"]),
+                        authors=", ".join(item["authors"]),
                         summary=item["summary"],
                         url=item['abs'],
-                        tldr=ai_data.get('tldr', ''),
-                        motivation=ai_data.get('motivation', ''),
+                        core_problem=ai_data.get('core_problem', ''),
+                        key_insight=ai_data.get('key_insight', ''),
                         method=ai_data.get('method', ''),
-                        result=ai_data.get('result', ''),
-                        conclusion=ai_data.get('conclusion', ''),
+                        method_formula=ai_data.get('method_formula', ''),
+                        core_finding=ai_data.get('core_finding', ''),
+                        mechanism_insight=ai_data.get('mechanism_insight', ''),
+                        action_value=ai_data.get('action_value', ''),
+                        transferability=ai_data.get('transferability', ''),
+                        value_score=ai_data.get('value_score', ''),
+                        summary_core=ai_data.get('summary_core', ''),
+                        summary_layman=ai_data.get('summary_layman', ''),
                         cate=item['categories'][0],
                         idx=next(idx)
                     )
