@@ -3,10 +3,6 @@ import json
 import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import List, Dict
-from queue import Queue
-from threading import Lock
-# INSERT_YOUR_CODE
-import requests
 
 import dotenv
 import argparse
@@ -34,41 +30,22 @@ def parse_args():
     return parser.parse_args()
 
 def process_single_item(chain, item: Dict, language: str) -> Dict:
-    def is_sensitive(content: str) -> bool:
-        """
-        调用 spam.dw-dengwei.workers.dev 接口检测内容是否包含敏感词。
-        返回 True 表示触发敏感词，False 表示未触发。
-        """
-        try:
-            resp = requests.post(
-                "https://spam.dw-dengwei.workers.dev",
-                json={"text": content},
-                timeout=5
-            )
-            if resp.status_code == 200:
-                result = resp.json()
-                # 约定接口返回 {"sensitive": true/false, ...}
-                return result.get("sensitive", True)
-            else:
-                # 如果接口异常，默认不触发敏感词
-                print(f"Sensitive check failed with status {resp.status_code}", file=sys.stderr)
-                return True
-        except Exception as e:
-            print(f"Sensitive check error: {e}", file=sys.stderr)
-            return True
-
-    # 检查 summary 字段
-    if is_sensitive(item.get("summary", "")):
-        return None
-
     """处理单个数据项"""
     # Default structure with meaningful fallback values
     default_ai_fields = {
-        "tldr": "Summary generation failed",
-        "motivation": "Motivation analysis unavailable",
-        "method": "Method extraction failed",
-        "result": "Result analysis unavailable",
-        "conclusion": "Conclusion extraction failed"
+        "core_problem": "问题提取失败",
+        "key_insight": "视角分析失败",
+        "method": "方法提取失败",
+        "method_formula": "方法公式化失败",
+        "core_finding": "发现提取失败",
+        "value": {
+            "mechanism_insight": "机制洞察分析失败",
+            "action_value": "行动启发评估失败",
+            "transferability": "可迁移性分析失败",
+            "value_score": "价值评分失败"
+        },
+        "summary_core": "核心总结生成失败",
+        "summary_layman": "大白话总结生成失败"
     }
     
     try:
@@ -106,10 +83,6 @@ def process_single_item(chain, item: Dict, language: str) -> Dict:
         if field not in item['AI']:
             item['AI'][field] = default_ai_fields[field]
 
-    # 检查 AI 生成的所有字段
-    for v in item.get("AI", {}).values():
-        if is_sensitive(str(v)):
-            return None
     return item
 
 def process_all_items(data: List[Dict], model_name: str, language: str, max_workers: int) -> List[Dict]:
@@ -148,11 +121,19 @@ def process_all_items(data: List[Dict], model_name: str, language: str, max_work
                 # Add default AI fields to ensure consistency
                 processed_data[idx] = data[idx]
                 processed_data[idx]['AI'] = {
-                    "tldr": "Processing failed",
-                    "motivation": "Processing failed",
-                    "method": "Processing failed",
-                    "result": "Processing failed",
-                    "conclusion": "Processing failed"
+                    "core_problem": "处理失败",
+                    "key_insight": "处理失败",
+                    "method": "处理失败",
+                    "method_formula": "处理失败",
+                    "core_finding": "处理失败",
+                    "value": {
+                        "mechanism_insight": "处理失败",
+                        "action_value": "处理失败",
+                        "transferability": "处理失败",
+                        "value_score": "处理失败"
+                    },
+                    "summary_core": "处理失败",
+                    "summary_layman": "处理失败"
                 }
     
     return processed_data
