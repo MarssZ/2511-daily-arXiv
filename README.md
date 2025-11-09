@@ -36,6 +36,9 @@ https://github.com/user-attachments/assets/b25712a4-fb8d-484f-863d-e8da6922f9d7
 
 
 # How to use
+
+## 📚 arXiv Daily Papers (Automated)
+
 This repo will daily crawl arXiv papers about **cs.CV, cs.GR, cs.CL and cs.AI**, and use **DeepSeek** to summarize the papers in **Chinese**.
 If you wish to crawl other arXiv categories, use other LLMs, or other languages, please follow the instructions.
 Otherwise, you can directly use this repo in https://dw-dengwei.github.io/daily-arXiv-ai-enhanced/. Please star it if you like :)
@@ -56,6 +59,52 @@ Otherwise, you can directly use this repo in https://dw-dengwei.github.io/daily-
 8. Go to your-own-repo -> Actions -> arXiv-daily-ai-enhanced
 9. You can manually click **Run workflow** to test if it works well (it may take about one hour). By default, this action will automatically run every day. You can modify it in `.github/workflows/run.yml`
 10. Set up GitHub pages: Go to your own repo -> Settings -> Pages. In `Build and deployment`, set `Source="Deploy from a branch"`, `Branch="main", "/(root)"`. Wait for a few minutes, go to https://\<username\>.github.io/daily-arXiv-ai-enhanced/. Please see this [issue](https://github.com/dw-dengwei/daily-arXiv-ai-enhanced/issues/14) for more precise instructions.
+
+---
+
+## 🏆 NeurIPS Conference Papers (Manual)
+
+**NEW!** This repo now supports crawling NeurIPS conference papers (Oral/Spotlight) with the same AI enhancement pipeline.
+
+### Quick Start
+
+```powershell
+# Step 1: Crawl NeurIPS 2024 Oral papers
+cd daily_arxiv
+../.venv/Scripts/python.exe -m scrapy crawl neurips -o ../data/neurips-2024-oral.jsonl
+
+# Step 2: AI Enhancement
+cd ../ai
+../.venv/Scripts/python.exe enhance.py --data ../data/neurips-2024-oral.jsonl --max_workers 10
+
+# Step 3: Convert to Markdown
+cd ../to_md
+python convert.py --data ../data/neurips-2024-oral_AI_enhanced_Chinese.jsonl
+```
+
+### Features
+
+- ✅ **Zero Breaking Changes**: Independent from arXiv crawler
+- ✅ **Same AI Pipeline**: Reuses existing AI enhancement infrastructure
+- ✅ **Graceful Degradation**: Outputs basic info even when PDF links are missing
+- ✅ **Flexible Parameters**: Support different years and categories
+
+### Usage Examples
+
+```bash
+# Crawl different years/categories
+scrapy crawl neurips -a year=2024 -a category=oral -o neurips-2024-oral.jsonl
+scrapy crawl neurips -a year=2023 -a category=spotlight -o neurips-2023-spotlight.jsonl
+```
+
+### View Results
+
+- **Local**: `data/neurips-2024-oral.md`
+- **GitHub Pages**: Same as arXiv papers, published to your GitHub Pages site
+
+**📖 Detailed Guide**: See [NeurIPS Crawler README](specs/neurips-paper-crawler/README.md) for complete instructions, troubleshooting, and technical details.
+
+---
 
 # Plans
 See https://github.com/users/dw-dengwei/projects/3

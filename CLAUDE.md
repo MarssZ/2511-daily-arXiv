@@ -54,9 +54,11 @@
 E:\MarssPython\2511-daily-arXiv/
 ├── daily_arxiv/                # Scrapy 爬虫项目
 │   └── daily_arxiv/
-│       ├── spiders/arxiv.py   # arXiv 爬虫
+│       ├── spiders/
+│       │   ├── arxiv.py       # arXiv 爬虫（每日自动）
+│       │   └── neurips.py     # 🆕 NeurIPS 爬虫（年度手动）
 │       ├── items.py           # 数据结构定义
-│       ├── pipelines.py       # 数据处理管道
+│       ├── pipelines.py       # 数据处理管道（仅 arXiv 使用）
 │       └── settings.py        # Scrapy 配置
 ├── ai/                         # AI 增强模块
 │   ├── structure.py           # 输出结构定义（5个字段）
@@ -75,6 +77,11 @@ E:\MarssPython\2511-daily-arXiv/
 │   ├── data-structures.md     # 数据结构设计
 │   ├── workflows.md           # 核心工作流
 │   └── v2-design.md           # v2.0 设计方案
+├── specs/neurips-paper-crawler/  # 🆕 NeurIPS 爬虫文档
+│   ├── README.md              # 使用指南（完整流程）
+│   ├── requirements.md        # 需求文档
+│   ├── design.md              # 设计文档
+│   └── tasks.md               # 任务清单
 ├── config/                     # 配置文件
 │   └── research_topics.txt    # 研究母题列表（v2.0）
 ├── data/                       # 发布的 Markdown 文件
@@ -101,12 +108,18 @@ E:\MarssPython\2511-daily-arXiv/
 | [核心工作流](docs/workflows.md) | 完整的数据处理流程（爬虫→AI→Markdown） |
 | [v2.0 设计](docs/v2-design.md) | 母题筛选功能设计（降低 80% 成本） |
 | [AI 模块说明](ai/README.md) | Prompt 配置和自定义指南 |
+| 🆕 [NeurIPS 爬虫指南](specs/neurips-paper-crawler/README.md) | **完整使用手册**（爬取→AI→Markdown） |
 
 ### 快速链接
 
-- **数据格式**：参见 [data-structures.md](docs/data-structures.md)
-- **工作流程**：参见 [workflows.md](docs/workflows.md)
-- **AI 配置**：参见 [ai/README.md](ai/README.md)
+- **arXiv 爬虫**：
+  - **数据格式**：参见 [data-structures.md](docs/data-structures.md)
+  - **工作流程**：参见 [workflows.md](docs/workflows.md)
+  - **AI 配置**：参见 [ai/README.md](ai/README.md)
+- **🆕 NeurIPS 爬虫**：
+  - **使用指南**：参见 [specs/neurips-paper-crawler/README.md](specs/neurips-paper-crawler/README.md)
+  - **需求文档**：参见 [requirements.md](specs/neurips-paper-crawler/requirements.md)
+  - **设计文档**：参见 [design.md](specs/neurips-paper-crawler/design.md)
 - **v2.0 功能**：参见 [v2-design.md](docs/v2-design.md)
 
 ---
@@ -157,6 +170,8 @@ MAX_WORKERS=10
 
 ### 3. 运行流程
 
+#### 选项 A：arXiv 每日论文（自动化）
+
 **使用便捷脚本（推荐）：**
 
 ```powershell
@@ -179,6 +194,33 @@ python update_readme.py
 ```
 
 详细的命令说明和工作流程请参见 [workflows.md](docs/workflows.md)。
+
+#### 🆕 选项 B：NeurIPS 会议论文（手动）
+
+**完整三步流程：**
+
+```powershell
+# 步骤 1：爬取 NeurIPS 2024 Oral 论文
+cd daily_arxiv
+../.venv/Scripts/python.exe -m scrapy crawl neurips -o ../data/neurips-2024-oral.jsonl
+cd ..
+
+# 步骤 2：AI 增强
+cd ai
+../.venv/Scripts/python.exe enhance.py --data ../data/neurips-2024-oral.jsonl --max_workers 10
+cd ..
+
+# 步骤 3：转换为 Markdown
+cd to_md
+python convert.py --data ../data/neurips-2024-oral_AI_enhanced_Chinese.jsonl
+cd ..
+```
+
+**查看结果**：
+- 本地：`data/neurips-2024-oral.md`
+- GitHub Pages：与 arXiv 论文一起发布
+
+**📖 详细指南**：参见 [NeurIPS 爬虫 README](specs/neurips-paper-crawler/README.md)
 
 ### 4. 查看结果
 
