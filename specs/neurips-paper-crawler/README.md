@@ -284,11 +284,82 @@ scrapy crawl neurips -a year=2023 -a category=spotlight -o neurips-2023-spotligh
 
 ---
 
+## 🎨 前端修改指南
+
+### 数据流
+
+```
+爬虫 (neurips.py)
+  ↓
+JSONL 文件 (neurips-2024-oral_AI_enhanced_Chinese.jsonl)
+  ↓
+js/app.js (parseJSONL函数) - 数据映射
+  ↓
+paper 对象 - 内存中的论文数据
+  ↓
+renderPapers函数 - 生成卡片HTML
+  ↓
+浏览器显示
+```
+
+### 修改卡片显示的关键位置
+
+**文件**：`js/app.js`
+
+#### 1. 添加新字段（~740行）
+
+在 `parseJSONL()` 函数中映射新字段：
+
+```javascript
+result[primaryCategory].push({
+  title: paper.title,
+  source: paper.source || 'arxiv',  // 添加来源字段
+  core_finding: paper.AI && paper.AI.core_finding ? paper.AI.core_finding : '',
+  // ... 其他字段
+});
+```
+
+#### 2. 修改卡片内容（~1165行）
+
+在 `renderPapers()` 函数中自定义卡片HTML：
+
+```javascript
+paperCard.innerHTML = `
+  <div class="paper-card-header">
+    <h3>${highlightedTitle}</h3>
+    <p>${paper.summary_layman}</p>  <!-- 显示一句话总结 -->
+    <span>📄 ${sourceDisplay}</span>  <!-- 显示来源 -->
+  </div>
+  <div class="paper-card-body">
+    <p>${paper.core_finding}</p>  <!-- 显示核心发现 -->
+  </div>
+`;
+```
+
+#### 3. 本地测试
+
+```powershell
+python -m http.server 8000
+# 访问 http://localhost:8000
+```
+
+### 常见修改场景
+
+| 需求 | 修改位置 | 行号 |
+|------|---------|------|
+| 卡片显示新字段 | `parseJSONL()` + `renderPapers()` | ~740 + ~1165 |
+| 修改详情弹窗 | `showPaperDetails()` | ~1200 |
+| 修改搜索范围 | `performTextSearch()` | ~900 |
+
+详细说明参见：`specs/neurips-paper-crawler/tasks.md#前端修改经验总结`
+
+---
+
 ## 📚 相关文档
 
 - **需求文档**：`specs/neurips-paper-crawler/requirements.md`
 - **设计文档**：`specs/neurips-paper-crawler/design.md`
-- **任务清单**：`specs/neurips-paper-crawler/tasks.md`
+- **任务清单**：`specs/neurips-paper-crawler/tasks.md`（含前端修改经验）
 - **项目说明**：`CLAUDE.md`（项目总体架构）
 
 ---
