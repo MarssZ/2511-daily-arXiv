@@ -81,20 +81,16 @@
 
 ### 需求 4：与现有 AI 增强流程集成
 
-**用户故事：** 作为用户，我希望 NeurIPS 论文能走相同的 AI 增强流程，以便生成结构化摘要。
+**用户故事：** 作为用户，我希望 NeurIPS 论文能走相同的 AI 增强流程，以便生成结构化价值评估。
 
 #### 验收标准
 
 1. NeurIPS 爬取输出的 JSONL 文件 SHALL 可被 `ai/enhance.py` 直接处理
 2. AI 增强脚本 SHALL 正确识别 `source: "neurips"` 字段但不改变处理逻辑
 3. WHEN 运行 AI 增强 THEN 系统 SHALL 生成 `neurips-2024-oral_AI_enhanced_Chinese.jsonl`
-4. 增强后的数据 SHALL 包含现有的 5 个结构化字段：
-   - TLDR
-   - Motivation
-   - Method
-   - Result
-   - Conclusion
-5. IF AI 增强失败（如 API 错误）THEN 系统 SHALL 保留原始数据并记录错误
+4. 增强后的数据 SHALL 包含由 `ai/structure.py` 定义的所有结构化字段（由 `ai/template.txt` 驱动生成）
+5. AI 增强流程 SHALL 使用相同的 LLM 配置（模型、温度、并发数等）
+6. IF AI 增强失败（如 API 错误）THEN 系统 SHALL 保留原始数据并记录错误
 
 ---
 
@@ -140,28 +136,7 @@
 
 ---
 
-### 需求 7：错误处理与日志
-
-**用户故事：** 作为系统维护者，我希望在爬取失败时能快速定位问题，而不是静默失败。
-
-#### 验收标准
-
-1. WHEN 网络请求失败 THEN 系统 SHALL 记录错误日志并重试最多 3 次
-2. WHEN 论文页面结构变化导致解析失败 THEN 系统 SHALL 记录警告并继续处理下一篇
-3. 系统 SHALL 在爬取结束时输出统计信息：
-   - 总论文数
-   - 成功爬取数
-   - 失败数（含原因）
-4. IF 超过 50% 论文爬取失败 THEN 系统 SHALL 输出错误提示，建议检查网页结构
-5. 所有日志 SHALL 使用 Scrapy 的标准日志系统
-
----
-
 ## 非功能性需求
-
-### 性能
-- 爬取 60 篇 Oral 论文（估计数量）SHALL 在 5 分钟内完成
-- 单篇论文爬取时间 SHALL 不超过 10 秒（含详情页请求）
 
 ### 可维护性
 - NeurIPS 爬虫代码 SHALL 与 arXiv 爬虫保持独立，避免耦合
