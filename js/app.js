@@ -737,6 +737,7 @@ function parseJsonlData(jsonlText, date) {
         details: paper.summary || '',
         date: date,
         id: paper.id,
+        source: paper.source || 'arxiv',
         core_problem: paper.AI && paper.AI.core_problem ? paper.AI.core_problem : '',
         key_insight: paper.AI && paper.AI.key_insight ? paper.AI.key_insight : '',
         method: paper.AI && paper.AI.method ? paper.AI.method : '',
@@ -1138,35 +1139,47 @@ function renderPapers() {
     }
 
     // 高亮标题和摘要（关键词与文本搜索）
-    const highlightedTitle = titleSummaryTerms.length > 0 
-      ? highlightMatches(paper.title, titleSummaryTerms, 'keyword-highlight') 
+    const highlightedTitle = titleSummaryTerms.length > 0
+      ? highlightMatches(paper.title, titleSummaryTerms, 'keyword-highlight')
       : paper.title;
-    const highlightedSummary = titleSummaryTerms.length > 0 
-      ? highlightMatches(paper.summary, titleSummaryTerms, 'keyword-highlight') 
+    const highlightedSummary = titleSummaryTerms.length > 0
+      ? highlightMatches(paper.summary, titleSummaryTerms, 'keyword-highlight')
       : paper.summary;
 
-    // 高亮作者（作者过滤 + 文本搜索）
-    const authorTerms = [];
-    if (activeAuthors.length > 0) authorTerms.push(...activeAuthors);
-    if (textSearchQuery && textSearchQuery.trim().length > 0) authorTerms.push(textSearchQuery.trim());
-    const highlightedAuthors = authorTerms.length > 0 
-      ? highlightMatches(paper.authors, authorTerms, 'author-highlight') 
-      : paper.authors;
-    
+    // 高亮 summary_layman（用于替代作者显示）
+    const highlightedSummaryLayman = paper.summary_layman && titleSummaryTerms.length > 0
+      ? highlightMatches(paper.summary_layman, titleSummaryTerms, 'keyword-highlight')
+      : paper.summary_layman || '';
+
+    // 卡片内容：优先显示 core_finding 和 mechanism_insight，否则回退到原始 summary
+    const cardContent = paper.core_finding || paper.mechanism_insight
+      ? `${paper.core_finding ? `🎯  <strong>核心问题：</strong>${titleSummaryTerms.length > 0 ? highlightMatches(paper.core_problem, titleSummaryTerms, 'keyword-highlight') : paper.core_finding}` : ''}
+         ${paper.core_finding && paper.mechanism_insight ? '<br><br>' : ''}
+         ${paper.mechanism_insight ? `💡  <strong>关键洞察：</strong>${titleSummaryTerms.length > 0 ? highlightMatches(paper.key_insight, titleSummaryTerms, 'keyword-highlight') : paper.mechanism_insight}` : ''}`
+      : highlightedSummary;
+
+    // Source 显示格式化
+    const sourceDisplay = paper.source === 'neurips' ? 'NeurIPS' : 'arXiv';
+    const sourceColor = paper.source === 'neurips' ? '#e74c3c' : '#3498db';
+
     paperCard.innerHTML = `
       <div class="paper-card-index">${index + 1}</div>
       ${paper.isMatched ? '<div class="match-badge" title="匹配您的搜索条件"></div>' : ''}
       <div class="paper-card-header">
         <h3 class="paper-card-title">${highlightedTitle}</h3>
-        <p class="paper-card-authors">${highlightedAuthors}</p>
-        <div class="paper-card-categories">
-          ${categoryTags}
+        <p class="paper-card-authors">${highlightedSummaryLayman}</p>
+        <div class="paper-card-categories" style="margin-top: 8px;">
+          <span style="color: ${sourceColor}; font-weight: 600; font-size: 0.9em;">📄 ${sourceDisplay}</span>
         </div>
       </div>
       <div class="paper-card-body">
-        <p class="paper-card-summary">${highlightedSummary}</p>
+        <p class="paper-card-summary">${cardContent}</p>
         <div class="paper-card-footer">
-          <span class="paper-card-date">${formatDate(paper.date)}</span>
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <span class="paper-card-date">${formatDate(paper.date)}</span>
+            ${categoryTags}
+            ${paper.value_score ? `<span style="color: #f39c12; font-weight: 600; font-size: 0.85em;">⭐ ${paper.value_score}</span>` : ''}
+          </div>
           <span class="paper-card-link">Details</span>
         </div>
       </div>
