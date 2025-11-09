@@ -3,8 +3,11 @@
     "allow": [
       "Bash(dir:*)",
       "Bash(nul)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "WebFetch(domain:neurips.cc)",
+      "mcp__mcp-fetcher__fetch_url",
+      "WebFetch(domain:openreview.net)"
     ]
   },
-  "outputStyle": "Explanatory"
+  "outputStyle": "linus"
 }
