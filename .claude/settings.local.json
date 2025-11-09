@@ -6,7 +6,13 @@
       "Bash(mkdir:*)",
       "WebFetch(domain:neurips.cc)",
       "mcp__mcp-fetcher__fetch_url",
-      "WebFetch(domain:openreview.net)"
+      "WebFetch(domain:openreview.net)",
+      "Bash(scrapy list:*)",
+      "Bash(...venvScriptspython.exe -m scrapy list)",
+      "Bash(timeout 15 \"E:\\MarssPython\\2511-daily-arXiv\\.venv\\Scripts\\python.exe\":*)",
+      "mcp__rag-web-browser__search",
+      "Bash(.venv/Scripts/python.exe:*)",
+      "Bash(../.venv/Scripts/python.exe:*)"
     ]
   },
   "outputStyle": "linus"
