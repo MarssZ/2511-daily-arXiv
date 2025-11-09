@@ -1,0 +1,14 @@
+{
+  "conferences": [
+    {
+      "id": "neurips2024_oral_test",
+      "name": "NeurIPS 2024 Oral (Test)",
+      "year": 2024,
+      "category": "oral",
+      "file": "2025-11-09_AI_enhanced_Chinese.jsonl",
+      "count": 6,
+      "date": "2024-12-15",
+      "description": "NeurIPS 2024 Oral presentations - test dataset with 6 papers"
+    }
+  ]
+}
