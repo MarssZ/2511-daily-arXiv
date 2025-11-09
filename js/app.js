@@ -726,8 +726,8 @@ function parseJsonlData(jsonlText, date) {
         result[primaryCategory] = [];
       }
       
-      const summary = paper.AI && paper.AI.tldr ? paper.AI.tldr : paper.summary;
-      
+      const summary = paper.AI && paper.AI.summary_layman ? paper.AI.summary_layman : paper.summary;
+
       result[primaryCategory].push({
         title: paper.title,
         url: paper.abs || paper.pdf || `https://arxiv.org/abs/${paper.id}`,
@@ -737,10 +737,17 @@ function parseJsonlData(jsonlText, date) {
         details: paper.summary || '',
         date: date,
         id: paper.id,
-        motivation: paper.AI && paper.AI.motivation ? paper.AI.motivation : '',
+        core_problem: paper.AI && paper.AI.core_problem ? paper.AI.core_problem : '',
+        key_insight: paper.AI && paper.AI.key_insight ? paper.AI.key_insight : '',
         method: paper.AI && paper.AI.method ? paper.AI.method : '',
-        result: paper.AI && paper.AI.result ? paper.AI.result : '',
-        conclusion: paper.AI && paper.AI.conclusion ? paper.AI.conclusion : ''
+        method_formula: paper.AI && paper.AI.method_formula ? paper.AI.method_formula : '',
+        core_finding: paper.AI && paper.AI.core_finding ? paper.AI.core_finding : '',
+        mechanism_insight: paper.AI && paper.AI.mechanism_insight ? paper.AI.mechanism_insight : '',
+        action_value: paper.AI && paper.AI.action_value ? paper.AI.action_value : '',
+        transferability: paper.AI && paper.AI.transferability ? paper.AI.transferability : '',
+        value_score: paper.AI && paper.AI.value_score ? paper.AI.value_score : '',
+        summary_core: paper.AI && paper.AI.summary_core ? paper.AI.summary_core : '',
+        summary_layman: paper.AI && paper.AI.summary_layman ? paper.AI.summary_layman : ''
       });
     } catch (error) {
       console.error('解析JSON行失败:', error, line);
@@ -875,10 +882,17 @@ function renderPapers() {
         Array.isArray(a.category) ? a.category.join(', ') : a.category,
         a.summary,
         a.details || '',
-        a.motivation || '',
+        a.core_problem || '',
+        a.key_insight || '',
         a.method || '',
-        a.result || '',
-        a.conclusion || ''
+        a.method_formula || '',
+        a.core_finding || '',
+        a.mechanism_insight || '',
+        a.action_value || '',
+        a.transferability || '',
+        a.value_score || '',
+        a.summary_core || '',
+        a.summary_layman || ''
       ].join(' ').toLowerCase();
       const hayB = [
         b.title,
@@ -886,10 +900,17 @@ function renderPapers() {
         Array.isArray(b.category) ? b.category.join(', ') : b.category,
         b.summary,
         b.details || '',
-        b.motivation || '',
+        b.core_problem || '',
+        b.key_insight || '',
         b.method || '',
-        b.result || '',
-        b.conclusion || ''
+        b.method_formula || '',
+        b.core_finding || '',
+        b.mechanism_insight || '',
+        b.action_value || '',
+        b.transferability || '',
+        b.value_score || '',
+        b.summary_core || '',
+        b.summary_layman || ''
       ].join(' ').toLowerCase();
       const am = hayA.includes(q);
       const bm = hayB.includes(q);
@@ -906,10 +927,17 @@ function renderPapers() {
         Array.isArray(p.category) ? p.category.join(', ') : p.category,
         p.summary,
         p.details || '',
-        p.motivation || '',
+        p.core_problem || '',
+        p.key_insight || '',
         p.method || '',
-        p.result || '',
-        p.conclusion || ''
+        p.method_formula || '',
+        p.core_finding || '',
+        p.mechanism_insight || '',
+        p.action_value || '',
+        p.transferability || '',
+        p.value_score || '',
+        p.summary_core || '',
+        p.summary_layman || ''
       ].join(' ').toLowerCase();
       const matched = hay.includes(q);
       p.isMatched = matched;
@@ -1200,22 +1228,50 @@ function showPaperDetails(paper, paperIndex) {
     ? highlightMatches(abstractText, modalTitleTerms, 'keyword-highlight') 
     : abstractText;
   
-  // 高亮其他部分（如果存在且是摘要的一部分）
-  const highlightedMotivation = paper.motivation && modalTitleTerms.length > 0 
-    ? highlightMatches(paper.motivation, modalTitleTerms, 'keyword-highlight') 
-    : paper.motivation;
-  
-  const highlightedMethod = paper.method && modalTitleTerms.length > 0 
-    ? highlightMatches(paper.method, modalTitleTerms, 'keyword-highlight') 
+  // 高亮AI增强字段（11个新字段）
+  const highlightedCoreProblem = paper.core_problem && modalTitleTerms.length > 0
+    ? highlightMatches(paper.core_problem, modalTitleTerms, 'keyword-highlight')
+    : paper.core_problem;
+
+  const highlightedKeyInsight = paper.key_insight && modalTitleTerms.length > 0
+    ? highlightMatches(paper.key_insight, modalTitleTerms, 'keyword-highlight')
+    : paper.key_insight;
+
+  const highlightedMethod = paper.method && modalTitleTerms.length > 0
+    ? highlightMatches(paper.method, modalTitleTerms, 'keyword-highlight')
     : paper.method;
-  
-  const highlightedResult = paper.result && modalTitleTerms.length > 0 
-    ? highlightMatches(paper.result, modalTitleTerms, 'keyword-highlight') 
-    : paper.result;
-  
-  const highlightedConclusion = paper.conclusion && modalTitleTerms.length > 0 
-    ? highlightMatches(paper.conclusion, modalTitleTerms, 'keyword-highlight') 
-    : paper.conclusion;
+
+  const highlightedMethodFormula = paper.method_formula && modalTitleTerms.length > 0
+    ? highlightMatches(paper.method_formula, modalTitleTerms, 'keyword-highlight')
+    : paper.method_formula;
+
+  const highlightedCoreFinding = paper.core_finding && modalTitleTerms.length > 0
+    ? highlightMatches(paper.core_finding, modalTitleTerms, 'keyword-highlight')
+    : paper.core_finding;
+
+  const highlightedMechanismInsight = paper.mechanism_insight && modalTitleTerms.length > 0
+    ? highlightMatches(paper.mechanism_insight, modalTitleTerms, 'keyword-highlight')
+    : paper.mechanism_insight;
+
+  const highlightedActionValue = paper.action_value && modalTitleTerms.length > 0
+    ? highlightMatches(paper.action_value, modalTitleTerms, 'keyword-highlight')
+    : paper.action_value;
+
+  const highlightedTransferability = paper.transferability && modalTitleTerms.length > 0
+    ? highlightMatches(paper.transferability, modalTitleTerms, 'keyword-highlight')
+    : paper.transferability;
+
+  const highlightedValueScore = paper.value_score && modalTitleTerms.length > 0
+    ? highlightMatches(paper.value_score, modalTitleTerms, 'keyword-highlight')
+    : paper.value_score;
+
+  const highlightedSummaryCore = paper.summary_core && modalTitleTerms.length > 0
+    ? highlightMatches(paper.summary_core, modalTitleTerms, 'keyword-highlight')
+    : paper.summary_core;
+
+  const highlightedSummaryLayman = paper.summary_layman && modalTitleTerms.length > 0
+    ? highlightMatches(paper.summary_layman, modalTitleTerms, 'keyword-highlight')
+    : paper.summary_layman;
   
   // 判断是否需要显示高亮说明
   const showHighlightLegend = activeKeywords.length > 0 || activeAuthors.length > 0;
@@ -1232,12 +1288,19 @@ function showPaperDetails(paper, paperIndex) {
       
       <h3>TL;DR</h3>
       <p>${highlightedSummary}</p>
-      
+
       <div class="paper-sections">
-        ${paper.motivation ? `<div class="paper-section"><h4>Motivation</h4><p>${highlightedMotivation}</p></div>` : ''}
-        ${paper.method ? `<div class="paper-section"><h4>Method</h4><p>${highlightedMethod}</p></div>` : ''}
-        ${paper.result ? `<div class="paper-section"><h4>Result</h4><p>${highlightedResult}</p></div>` : ''}
-        ${paper.conclusion ? `<div class="paper-section"><h4>Conclusion</h4><p>${highlightedConclusion}</p></div>` : ''}
+        ${paper.summary_core ? `<div class="paper-section"><h4>📝 核心总结</h4><p>${highlightedSummaryCore}</p></div>` : ''}
+        ${paper.summary_layman ? `<div class="paper-section"><h4>🗣️ 大白话版</h4><p>${highlightedSummaryLayman}</p></div>` : ''}
+        ${paper.core_problem ? `<div class="paper-section"><h4>🎯 核心问题</h4><p>${highlightedCoreProblem}</p></div>` : ''}
+        ${paper.key_insight ? `<div class="paper-section"><h4>💡 关键洞察</h4><p>${highlightedKeyInsight}</p></div>` : ''}
+        ${paper.method ? `<div class="paper-section"><h4>⚙️ 关键方法</h4><p>${highlightedMethod}</p></div>` : ''}
+        ${paper.method_formula ? `<div class="paper-section"><h4>📐 方法公式</h4><p>${highlightedMethodFormula}</p></div>` : ''}
+        ${paper.core_finding ? `<div class="paper-section"><h4>🔍 核心发现</h4><p>${highlightedCoreFinding}</p></div>` : ''}
+        ${paper.mechanism_insight ? `<div class="paper-section"><h4>💎 机制洞察</h4><p>${highlightedMechanismInsight}</p></div>` : ''}
+        ${paper.action_value ? `<div class="paper-section"><h4>🚀 行动启发</h4><p>${highlightedActionValue}</p></div>` : ''}
+        ${paper.transferability ? `<div class="paper-section"><h4>🔄 可迁移性</h4><p>${highlightedTransferability}</p></div>` : ''}
+        ${paper.value_score ? `<div class="paper-section"><h4>⭐ 价值评分</h4><p>${highlightedValueScore}</p></div>` : ''}
       </div>
       
       ${highlightedAbstract ? `<h3>Abstract</h3><p class="original-abstract">${highlightedAbstract}</p>` : ''}

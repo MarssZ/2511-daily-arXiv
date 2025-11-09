@@ -12,7 +12,15 @@
       "Bash(timeout 15 \"E:\\MarssPython\\2511-daily-arXiv\\.venv\\Scripts\\python.exe\":*)",
       "mcp__rag-web-browser__search",
       "Bash(.venv/Scripts/python.exe:*)",
-      "Bash(../.venv/Scripts/python.exe:*)"
+      "Bash(../.venv/Scripts/python.exe:*)",
+      "Bash(python -c:*)",
+      "Bash(echo:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nfeat: add NeurIPS conference paper crawler with AI enhancement\n\n✨ Features:\n- NeurIPS 2024 Oral papers crawler (neurips.py)\n- Zero breaking changes: independent from arXiv crawler\n- Same AI enhancement pipeline (100% compatible)\n- Graceful degradation for missing PDF links\n\n📝 Documentation:\n- Complete usage guide (specs/neurips-paper-crawler/README.md)\n- Updated main README.md with NeurIPS section\n- Updated CLAUDE.md with architecture changes\n\n🧪 Test Results:\n- 6 papers crawled successfully (test data)\n- AI enhancement: 100% success rate\n- Markdown conversion: format verified\n\n📊 Test Data:\n- data/neurips-2024-oral-test.md (6 papers with AI analysis)\n\n🤖 Generated with Claude Code\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git push)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nfeat: add NeurIPS conference paper crawler with AI enhancement\n\n✨ Features:\n- NeurIPS 2024 Oral papers crawler (neurips.py)\n- Zero breaking changes: independent from arXiv crawler\n- Same AI enhancement pipeline (100% compatible)\n- Graceful degradation for missing PDF links\n\n📝 Documentation:\n- Complete usage guide (specs/neurips-paper-crawler/README.md)\n- Updated main README.md with NeurIPS section\n- Updated CLAUDE.md with architecture changes\n\n🧪 Test Results:\n- 6 papers crawled successfully (test data)\n- AI enhancement: 100% success rate\n- Markdown conversion: format verified\n\n📊 Test Data:\n- data/neurips-2024-oral-test.md (6 papers with AI analysis)\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git commit:*)",
+      "Bash(cat:*)"
     ]
   },
   "outputStyle": "linus"
